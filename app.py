@@ -71,16 +71,17 @@ def run_swarm(
     yield "🚀 Deploying Builder Swarm...\n\n"
     
     try:
-        accumulated_length = 0
+        last_chunk = ""
         for chunk in swarm_client.stream_swarm_response(
             full_prompt,
             max_tokens=max_tokens,
             temperature=temperature,
         ):
-            accumulated_length = len(chunk)  # chunk is already accumulated, so this is the total length
+            last_chunk = chunk  # Track the last chunk (which contains the full accumulated response)
             yield chunk
         
-        SwarmLogger.log_swarm_complete(task, accumulated_length)
+        # Log the total response length using the final accumulated chunk
+        SwarmLogger.log_swarm_complete(task, len(last_chunk))
         
     except APIError as e:
         error_msg = f"API error: {str(e)}"
@@ -208,7 +209,7 @@ with gr.Blocks(theme=gr.themes.Dark()) as demo:
     
     # Event handlers
     btn.click(
-        lambda: ([], []),
+        lambda: [],
         None,
         chatbot,
     ).then(
