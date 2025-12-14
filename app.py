@@ -77,7 +77,7 @@ def run_swarm(
             max_tokens=max_tokens,
             temperature=temperature,
         ):
-            accumulated_length = len(chunk)
+            accumulated_length = len(chunk)  # chunk is already accumulated, so this is the total length
             yield chunk
         
         SwarmLogger.log_swarm_complete(task, accumulated_length)
